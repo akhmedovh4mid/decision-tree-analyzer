@@ -125,3 +125,8 @@ class VisualizationLog:
     SCATTER = "Построен scatter plot: %s vs %s"
     FEATURE_IMPORTANCE = "Построен график важности признаков."
     CONFUSION_MATRIX = "Построена визуализация confusion matrix."
+
+
+class TreePlotterLog:
+    TREE_PLOT_CREATED = "Граф дерева решений успешно построен."
+    TREE_EXPORT_TEXT = "Текстовое представление дерева успешно создано."

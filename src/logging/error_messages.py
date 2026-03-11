@@ -88,3 +88,9 @@ class VisualizationError:
     DATAFRAME_EMPTY = "DataFrame пуст. Невозможно построить график."
     COLUMN_NOT_FOUND = "Колонка '{col}' не найдена в DataFrame."
     PLOT_FAILED = "Ошибка при построении графика."
+
+
+class TreePlotterError:
+    MODEL_NOT_TRAINED = "Модель дерева решений не обучена."
+    FEATURE_NAMES_REQUIRED = "Необходимо передать список названий признаков."
+    PLOT_FAILED = "Ошибка при построении дерева решений."
