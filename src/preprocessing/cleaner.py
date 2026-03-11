@@ -1,0 +1,242 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
+from typing import Literal
+
+import numpy as np
+from pandas import DataFrame
+from pandas.api.types import is_numeric_dtype
+
+from src.logging.error_messages import DataCleanerError as DCE
+from src.logging.log_messages import DataCleanerLog as DCL
+from src.logging.logger import get_logger
+
+logger = get_logger(name=__name__)
+
+
+Strategy = Literal[
+    "drop_rows",
+    "drop_columns",
+    "fill_constant",
+    "fill_mean",
+    "fill_median",
+    "fill_mode",
+    "fill_ffill",
+    "fill_bfill",
+]
+
+DropKeep = Literal["first", "last", False]
+
+
+class DataCleaner:
+    """
+    Класс для очистки данных:
+    - обработка пропусков
+    - удаление дубликатов
+    - удаление выбросов
+    - сброс индекса
+
+    Методы chainable.
+    """
+
+    def __init__(self, data_frame: DataFrame) -> None:
+        self.data_frame: DataFrame = data_frame.copy()
+        logger.debug(DCL.INIT, self.data_frame.shape)
+
+    def __repr__(self) -> str:
+        return f"DataCleaner(shape={self.data_frame.shape})"
+
+    def copy(self) -> DataCleaner:
+        return DataCleaner(self.data_frame.copy())
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return self.data_frame.shape
+
+    def head(self, n: int = 5) -> DataFrame:
+        return self.data_frame.head(n)
+
+    def get_data(self) -> DataFrame:
+        return self.data_frame
+
+    # --------------------------------------------------------
+    # Missing values
+    # --------------------------------------------------------
+
+    def handle_missings(
+        self,
+        strategy: Strategy = "drop_rows",
+        fill_value: int | float | str | None = None,
+        columns: Sequence[str] | None = None,
+    ) -> DataCleaner:
+
+        if columns is None:
+            cols = list(self.data_frame.columns)
+        else:
+            df_cols = set(self.data_frame.columns)
+            cols = [c for c in columns if c in df_cols]
+
+            missing_cols = set(columns) - set(cols)
+            for col in missing_cols:
+                logger.warning(DCL.COLUMN_NOT_FOUND, col)
+
+        if not cols:
+            logger.warning(DCE.MISSING_COLUMNS_NOT_FOUND_ERROR)
+            return self
+
+        logger.info(DCL.START_HANDLE_MISSINGS, strategy, cols)
+
+        missing_before = self.data_frame[cols].isna().sum().sum()
+        logger.debug(DCL.MISSING_BEFORE, missing_before)
+
+        match strategy:
+            case "drop_rows":
+                before = len(self.data_frame)
+                self.data_frame = self.data_frame.dropna(subset=cols)
+                logger.info(DCL.ROWS_DROPPED, before - len(self.data_frame))
+
+            case "drop_columns":
+                cols_with_na = (
+                    self.data_frame[cols]
+                    .columns[self.data_frame[cols].isna().any()]
+                    .tolist()
+                )
+
+                self.data_frame = self.data_frame.drop(columns=cols_with_na)
+                logger.info(DCL.COLUMNS_DROPPED, cols_with_na)
+
+            case "fill_constant":
+                if fill_value is None:
+                    raise ValueError(DCE.FILL_CONSTANT_MISSING_VALUE_ERROR)
+
+                self.data_frame[cols] = self.data_frame[cols].fillna(fill_value)
+                logger.info(DCL.FILLED_CONSTANT, fill_value)
+
+            case "fill_mean":
+                for col in cols:
+                    if is_numeric_dtype(self.data_frame[col]):
+                        mean_val = self.data_frame[col].mean()
+                        self.data_frame[col] = self.data_frame[col].fillna(mean_val)
+                        logger.debug(DCL.FILLED_MEAN, col, mean_val)
+                    else:
+                        logger.warning(DCL.NON_NUMERIC_COLUMN, col, "fill_mean")
+
+            case "fill_median":
+                for col in cols:
+                    if is_numeric_dtype(self.data_frame[col]):
+                        median_val = self.data_frame[col].median()
+                        self.data_frame[col] = self.data_frame[col].fillna(median_val)
+                        logger.debug(DCL.FILLED_MEDIAN, col, median_val)
+                    else:
+                        logger.warning(DCL.NON_NUMERIC_COLUMN, col, "fill_median")
+
+            case "fill_mode":
+                for col in cols:
+                    mode_vals = self.data_frame[col].mode()
+
+                    if not mode_vals.empty:
+                        val = mode_vals.iloc[0]
+                        self.data_frame[col] = self.data_frame[col].fillna(val)
+                        logger.debug(DCL.FILLED_MODE, col, val)
+                    else:
+                        logger.warning(DCL.MODE_NOT_FOUND, col)
+
+            case "fill_ffill":
+                self.data_frame[cols] = self.data_frame[cols].ffill()
+                logger.info(DCL.APPLY_FFILL)
+
+            case "fill_bfill":
+                self.data_frame[cols] = self.data_frame[cols].bfill()
+                logger.info(DCL.APPLY_BFILL)
+
+        missing_after = self.data_frame[cols].isna().sum().sum()
+        logger.debug(DCL.MISSING_AFTER, missing_after)
+
+        return self
+
+    # --------------------------------------------------------
+    # Duplicates
+    # --------------------------------------------------------
+
+    def remove_duplicates(
+        self,
+        subset: Sequence[str] | None = None,
+        keep: DropKeep = "first",
+    ) -> DataCleaner:
+
+        self.data_frame = self.data_frame.drop_duplicates(subset=subset, keep=keep)
+        return self
+
+    # --------------------------------------------------------
+    # Outliers IQR
+    # --------------------------------------------------------
+
+    def remove_outliers_iqr(
+        self,
+        columns: Sequence[str] | None = None,
+        multiplier: float = 1.5,
+    ) -> DataCleaner:
+
+        if columns is None:
+            columns = self.data_frame.select_dtypes(
+                include=[np.number]
+            ).columns.tolist()
+
+        for col in columns:
+            if not is_numeric_dtype(self.data_frame[col]):
+                raise TypeError(DCE.NON_NUMERIC_COLUMN_IQR_ERROR.format(col=col))
+
+        df = self.data_frame[list(columns)]
+
+        values = df.to_numpy()
+
+        q1 = np.nanpercentile(values, 25, axis=0)
+        q3 = np.nanpercentile(values, 75, axis=0)
+
+        iqr = q3 - q1
+
+        lower = q1 - multiplier * iqr
+        upper = q3 + multiplier * iqr
+
+        mask = np.all((values >= lower) & (values <= upper), axis=1)
+
+        self.data_frame = self.data_frame.loc[mask].reset_index(drop=True)
+
+        return self
+
+    # --------------------------------------------------------
+    # Outliers Z-score
+    # --------------------------------------------------------
+
+    def remove_outliers_zscore(
+        self,
+        columns: Sequence[str] | None = None,
+        threshold: float = 3.0,
+    ) -> DataCleaner:
+
+        if columns is None:
+            columns = self.data_frame.select_dtypes(
+                include=[np.number]
+            ).columns.tolist()
+
+        for col in columns:
+            if not is_numeric_dtype(self.data_frame[col]):
+                raise TypeError(DCE.NON_NUMERIC_COLUMN_ZSCORE_ERROR.format(col=col))
+
+        df = self.data_frame[list(columns)]
+
+        z_scores = (df - df.mean()) / df.std()
+
+        mask = (z_scores.abs() <= threshold).all(axis=1)
+
+        self.data_frame = self.data_frame.loc[mask].reset_index(drop=True)
+
+        return self
+
+    # --------------------------------------------------------
+    # Index
+    # --------------------------------------------------------
+
+    def reset_index(self, drop: bool = True) -> DataCleaner:
+        self.data_frame = self.data_frame.reset_index(drop=drop)
+        return self
