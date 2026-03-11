@@ -62,3 +62,8 @@ class ScalerLog:
         "Колонка '%s' отсутствует в новом наборе данных при transform"
     )
     NON_NUMERIC_COLUMN_TRANSFORM = "Колонка '%s' не числовая – пропущена при transform"
+
+
+class SplitterLog:
+    INIT = "Splitter инициализирован. shape=%s"
+    SPLIT_COMPLETE = "Разделение завершено. Обучающая выборка: %s строк, тестовая: %s строк. Целевая колонка: %s"

@@ -29,3 +29,9 @@ class ScalerError:
     NO_COLUMNS_TO_SCALE = "Не найдено числовых колонок для масштабирования."
     UNKNOWN_STRATEGY = "Неизвестная стратегия масштабирования: {strategy}"
     SCALER_NOT_FITTED = "Скейлер для колонки '{col}' не был обучен."
+
+
+class SplitterError:
+    TARGET_COLUMN_NOT_FOUND = "Целевая колонка '{col}' не найдена в DataFrame."
+    SPLIT_FAILED = "Ошибка при разделении данных."
+    NOT_SPLIT_YET = "Данные ещё не разделены. Сначала вызовите split()."

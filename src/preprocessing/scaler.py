@@ -1,12 +1,10 @@
-# src/preprocessing/scaler.py
-
 from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Any, Literal
 
 import numpy as np
-import pandas as pd
+from pandas import DataFrame
 from pandas.api.types import is_numeric_dtype
 from sklearn.preprocessing import (
     MaxAbsScaler,
@@ -53,7 +51,7 @@ class Scaler:
     Объект работает как chainable: методы, изменяющие данные, возвращают `self`.
     """
 
-    def __init__(self, data_frame: pd.DataFrame) -> None:
+    def __init__(self, data_frame: DataFrame) -> None:
         """
         Инициализация с копией исходного DataFrame.
 
@@ -77,7 +75,7 @@ class Scaler:
     def shape(self) -> tuple[int, int]:
         return self.data_frame.shape
 
-    def get_data(self) -> pd.DataFrame:
+    def get_data(self) -> DataFrame:
         """Возвращает текущий DataFrame (после всех преобразований)."""
         return self.data_frame
 
@@ -280,7 +278,7 @@ class Scaler:
     # Преобразование новых данных (transform)
     # ------------------------------------------------------------------
 
-    def transform(self, new_data: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, new_data: DataFrame) -> DataFrame:
         """
         Применить сохранённые скейлеры к новому DataFrame (например, тестовой выборке).
 
@@ -324,9 +322,7 @@ class Scaler:
     # Обратное преобразование (inverse_transform)
     # ------------------------------------------------------------------
 
-    def inverse_transform(
-        self, scaled_data: pd.DataFrame | None = None
-    ) -> pd.DataFrame:
+    def inverse_transform(self, scaled_data: DataFrame | None = None) -> DataFrame:
         """
         Восстанавливает исходные значения для всех масштабированных колонок.
         Если scaled_data не передан, используется self.data_frame.
