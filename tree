@@ -1,0 +1,53 @@
+src/             # Исходный код приложения
+src/__init__.py
+src/main.py      # Точка входа (запуск GUI или консольного режима)
+
+src/core/               # Ядро системы (контроллеры, модели данных)
+src/core/__init__.py
+src/core/controller.py  # MainController – связь GUI и логики
+src/core/dataset.py     # Класс Dataset (модель данных)
+
+src/data_io/             # Ввод/вывод данных
+src/data_io/__init__.py
+src/data_io/loader.py    # Функции загрузки из CSV/Excel
+src/data_io/saver.py     # Сохранение модели, отчётов (опционально)
+
+src/preprocessing/             # Предобработка данных
+src/preprocessing/__init__.py
+src/preprocessing/cleaner.py   # Обработка пропусков, удаление дубликатов
+src/preprocessing/encoder.py   # Кодирование категорий (OneHot, Label)
+src/preprocessing/scaler.py    # Масштабирование числовых признаков
+src/preprocessing/splitter.py  # Разделение на train/test
+
+src/modeling/               # Модели машинного обучения
+src/modeling/__init__.py
+src/modeling/tree_model.py  # Класс DecisionTreeModel (обёртка над sklearn)
+src/modeling/evaluator.py   # Функции оценки (метрики, матрица ошибок)
+
+src/visualization/                 # Визуализация
+src/visualization/__init__.py
+src/visualization/plots.py         # Статические графики (matplotlib)
+src/visualization/tree_plotter.py  # Отрисовка дерева решений
+
+src/gui/                            # Графический интерфейс
+src/gui/__init__.py
+src/gui/main_window.py              # Главное окно (PyQt5)
+src/gui/widgets/
+src/gui/widgets/__init__.py
+src/gui/widgets/data_table.py       # Виджет таблицы данных
+src/gui/widgets/plot_canvas.py      # Холст для matplotlib
+src/gui/widgets/parameter_panel.py  # Панель настроек модели
+src/gui/dialogs/
+src/gui/dialogs/__init__.py
+src/gui/dialogs/load_dialog.py      # Диалог загрузки файла
+src/gui/dialogs/about_dialog.py     # О программе
+
+tests/                       # Модульные тесты
+tests/__init__.py
+tests/test_dataset.py
+tests/test_preprocessing.py
+tests/test_model.py
+
+data/  # Примеры данных для тестирования
+
+models/  # Сохранённые обученные модели (опционально)

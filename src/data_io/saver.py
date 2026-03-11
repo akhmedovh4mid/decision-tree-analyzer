@@ -1,5 +1,3 @@
-# src/data_io/saver.py
-
 from __future__ import annotations
 
 import json

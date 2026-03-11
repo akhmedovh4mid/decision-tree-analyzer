@@ -1,0 +1,44 @@
+1. src/core/dataset.py
+Содержит класс Dataset, который хранит загруженные данные в виде pandas DataFrame, а также метаинформацию (целевая переменная, типы колонок). Методы:
+- load_from_file(filepath)
+- set_target(column_name)
+- get_X_y()
+- get_summary() (для статистики)
+
+2. src/core/controller.py
+Класс MainController управляет всем процессом. Он хранит ссылки на текущий Dataset, Preprocessor, DecisionTreeModel. Обрабатывает события от GUI:
+- handle_load_file(filepath)
+- handle_preprocess(settings)
+- handle_train(params)
+- handle_predict(input_data)
+
+3. src/preprocessing/ (несколько классов)
+Каждый класс отвечает за одну операцию. Например:
+- DataCleaner: удаление/заполнение пропусков.
+- CategoryEncoder: преобразование категориальных признаков.
+- FeatureScaler: стандартизация/нормализация.
+- DataSplitter: разбиение на train/test.
+Можно объединить их в единый класс Preprocessor, который вызывает нужные методы в зависимости от настроек.
+
+4. src/modeling/tree_model.py
+Класс-обёртка над sklearn.tree.DecisionTreeClassifier (или регрессором). Содержит методы:
+- train(X_train, y_train)
+- predict(X)
+- evaluate(X_test, y_test) – возвращает словарь с метриками.
+- get_feature_importance() – возвращает важность признаков.
+
+5. src/visualization/
+Функции для построения графиков с использованием matplotlib. Например:
+- plot_tree(model, feature_names, class_names) – рисует дерево.
+- plot_feature_importance(importance, feature_names) – горизонтальная столбчатая диаграмма.
+- plot_correlation_matrix(data) – тепловая карта корреляций.
+
+6. src/gui/
+Реализация на PyQt5. Главное окно (MainWindow) содержит:
+- Вкладки: «Данные», «Предобработка», «Модель», «Результаты».
+- Таблицу для просмотра данных (QTableView с моделью pandas).
+- Кастомный виджет для отображения matplotlib-графиков (FigureCanvasQTAgg).
+- Панели с настройками (поля ввода, комбобоксы, кнопки).
+Все диалоги вынесены в отдельные классы для переиспользования.
+
+7. src/main.py

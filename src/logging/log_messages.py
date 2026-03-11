@@ -87,3 +87,11 @@ class SaverLog:
     MODEL_SAVED_PICKLE = "Модель сохранена с помощью pickle"
     USE_PICKLE_INSTEAD_OF_JOBLIB = "joblib не доступен, используется pickle"
     CLEAR_LAST = "Информация о последнем сохранении сброшена."
+
+
+class DatasetLog:
+    INIT = "Dataset инициализирован."
+    DATA_LOADED = "Dataset загружен из файла: %s"
+    TARGET_SET = "Установлена целевая колонка: %s"
+    DATA_UPDATED = "Dataset обновлён. Новый размер: %s"
+    DATASET_CLEARED = "Dataset очищен."

@@ -57,3 +57,9 @@ class SaverError:
     )
     SAVE_FAILED = "Ошибка при сохранении файла: {path}"
     MATPLOTLIB_NOT_AVAILABLE = "Matplotlib не установлен. Невозможно сохранить график."
+
+
+class DatasetError:
+    DATASET_EMPTY = "Dataset пуст. Сначала загрузите данные."
+    TARGET_NOT_SET = "Целевая колонка не установлена."
+    COLUMN_NOT_FOUND = "Колонка '{col}' не найдена в DataFrame."
