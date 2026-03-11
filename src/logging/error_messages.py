@@ -74,3 +74,11 @@ class ModelError:
     TRAIN_FAILED = "Ошибка при обучении модели."
     EVALUATION_FAILED = "Ошибка при вычислении метрик."
     FEATURE_NAMES_REQUIRED = "Не указаны имена признаков."
+
+
+class EvaluatorError:
+    INVALID_TASK = (
+        "Неверный тип задачи: {task}. Используйте 'classification' или 'regression'."
+    )
+    EVALUATION_FAILED = "Ошибка при вычислении метрик."
+    PLOT_FAILED = "Ошибка при построении графика."

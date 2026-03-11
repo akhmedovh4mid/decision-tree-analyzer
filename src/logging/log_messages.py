@@ -107,3 +107,12 @@ class ModelLog:
     EVALUATE_COMPLETE = "Метрики вычислены."
     FEATURE_IMPORTANCE = "Вычислена важность признаков."
     TREE_PLOTTED = "Граф дерева решений построен."
+
+
+class EvaluatorLog:
+    INIT = "Evaluator инициализирован. Тип задачи: %s"
+    START_EVALUATION = "Начато вычисление метрик."
+    EVALUATION_COMPLETE = "Метрики успешно вычислены."
+    CONFUSION_MATRIX = "Матрица ошибок построена."
+    CROSS_VALIDATION = "Выполнена перекрёстная проверка модели."
+    PLOT_CREATED = "График оценки модели построен."

@@ -2,6 +2,7 @@ from .error_messages import (
     DataCleanerError,
     DatasetError,
     EncoderError,
+    EvaluatorError,
     LoaderError,
     ModelError,
     SaverError,
@@ -12,6 +13,7 @@ from .log_messages import (
     DataCleanerLog,
     DatasetLog,
     EncoderLog,
+    EvaluatorLog,
     LoaderLog,
     ModelLog,
     SaverLog,
@@ -38,4 +40,6 @@ __all__ = [
     "DatasetLog",
     "ModelError",
     "ModelLog",
+    "EvaluatorError",
+    "EvaluatorLog",
 ]
