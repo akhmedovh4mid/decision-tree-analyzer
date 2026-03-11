@@ -94,3 +94,10 @@ class TreePlotterError:
     MODEL_NOT_TRAINED = "Модель дерева решений не обучена."
     FEATURE_NAMES_REQUIRED = "Необходимо передать список названий признаков."
     PLOT_FAILED = "Ошибка при построении дерева решений."
+
+
+class ControllerError:
+    NO_DATASET = "Dataset не загружен"
+    NO_TARGET = "Целевая колонка не установлена"
+    NOT_SPLIT = "Данные ещё не разделены на train/test"
+    MODEL_NOT_TRAINED = "Модель ещё не обучена"

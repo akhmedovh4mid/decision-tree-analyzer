@@ -1,4 +1,5 @@
 from .error_messages import (
+    ControllerError,
     DataCleanerError,
     DatasetError,
     EncoderError,
@@ -12,6 +13,7 @@ from .error_messages import (
     VisualizationError,
 )
 from .log_messages import (
+    ControllerLog,
     DataCleanerLog,
     DatasetLog,
     EncoderLog,
@@ -50,4 +52,6 @@ __all__ = [
     "VisualizationLog",
     "TreePlotterError",
     "TreePlotterLog",
+    "ControllerLog",
+    "ControllerError",
 ]

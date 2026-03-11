@@ -83,7 +83,7 @@ class PandasTableModel(QAbstractTableModel):
     # Флаги ячеек
     # -------------------------------------------------------
 
-    def flags_(self, index: QModelIndex):
+    def flags(self, index: QModelIndex):  # pyright: ignore[reportIncompatibleMethodOverride]
 
         if not index.isValid():
             return QtCore.Qt.ItemFlag.NoItemFlags

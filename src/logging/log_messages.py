@@ -130,3 +130,16 @@ class VisualizationLog:
 class TreePlotterLog:
     TREE_PLOT_CREATED = "Граф дерева решений успешно построен."
     TREE_EXPORT_TEXT = "Текстовое представление дерева успешно создано."
+
+
+class ControllerLog:
+    INIT = "Controller инициализирован"
+    DATA_LOADED = "Данные загружены. Shape=%s"
+    DATA_SAVED = "Данные сохранены в %s"
+    TARGET_SET = "Целевая колонка установлена: %s"
+    DATA_SCALED = "Данные масштабированы стратегией %s"
+    DATA_SPLIT = "Данные разделены на train/test"
+    MODEL_TRAINED = "Модель дерева решений обучена"
+    PREDICTION_DONE = "Предсказания выполнены"
+    METRICS_COMPUTED = "Метрики вычислены"
+    FEATURE_IMPORTANCE = "Важность признаков рассчитана"
