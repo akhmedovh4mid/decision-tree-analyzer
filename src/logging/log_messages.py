@@ -67,3 +67,10 @@ class ScalerLog:
 class SplitterLog:
     INIT = "Splitter инициализирован. shape=%s"
     SPLIT_COMPLETE = "Разделение завершено. Обучающая выборка: %s строк, тестовая: %s строк. Целевая колонка: %s"
+
+
+class LoaderLog:
+    INIT = "DataLoader инициализирован."
+    START_LOAD = "Загрузка файла: %s, формат: %s"
+    LOAD_SUCCESS = "Файл успешно загружен. Размер данных: %s"
+    CLEAR = "Данные очищены."

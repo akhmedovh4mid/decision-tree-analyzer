@@ -35,3 +35,10 @@ class SplitterError:
     TARGET_COLUMN_NOT_FOUND = "Целевая колонка '{col}' не найдена в DataFrame."
     SPLIT_FAILED = "Ошибка при разделении данных."
     NOT_SPLIT_YET = "Данные ещё не разделены. Сначала вызовите split()."
+
+
+class LoaderError:
+    FILE_NOT_FOUND = "Файл не найден: {path}"
+    UNSUPPORTED_FORMAT = "Неподдерживаемый формат файла: {suffix}"
+    LOAD_FAILED = "Ошибка при загрузке файла: {path}"
+    NO_DATA_LOADED = "Данные ещё не загружены. Сначала вызовите load()."
