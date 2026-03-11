@@ -74,3 +74,16 @@ class LoaderLog:
     START_LOAD = "Загрузка файла: %s, формат: %s"
     LOAD_SUCCESS = "Файл успешно загружен. Размер данных: %s"
     CLEAR = "Данные очищены."
+
+
+class SaverLog:
+    INIT = "DataSaver инициализирован."
+    START_SAVE_DATA = "Сохранение данных в файл: %s, формат: %s"
+    START_SAVE_MODEL = "Сохранение модели в файл: %s"
+    START_SAVE_REPORT = "Сохранение отчёта в файл: %s, формат: %s"
+    START_SAVE_FIGURE = "Сохранение графика в файл: %s, формат: %s"
+    SAVE_SUCCESS = "Файл успешно сохранён: %s"
+    MODEL_SAVED_JOBLIB = "Модель сохранена с помощью joblib"
+    MODEL_SAVED_PICKLE = "Модель сохранена с помощью pickle"
+    USE_PICKLE_INSTEAD_OF_JOBLIB = "joblib не доступен, используется pickle"
+    CLEAR_LAST = "Информация о последнем сохранении сброшена."

@@ -42,3 +42,18 @@ class LoaderError:
     UNSUPPORTED_FORMAT = "Неподдерживаемый формат файла: {suffix}"
     LOAD_FAILED = "Ошибка при загрузке файла: {path}"
     NO_DATA_LOADED = "Данные ещё не загружены. Сначала вызовите load()."
+
+
+class SaverError:
+    FILE_EXISTS = (
+        "Файл уже существует: {path}. Используйте overwrite=True для перезаписи."
+    )
+    UNSUPPORTED_FORMAT = "Неподдерживаемый формат файла: {suffix}"
+    UNSUPPORTED_REPORT_FORMAT = (
+        "Неподдерживаемый формат отчёта: {fmt}. Используйте 'json' или 'txt'."
+    )
+    UNSUPPORTED_IMAGE_FORMAT = (
+        "Неподдерживаемый формат изображения: {suffix}. Используйте png, jpg, pdf."
+    )
+    SAVE_FAILED = "Ошибка при сохранении файла: {path}"
+    MATPLOTLIB_NOT_AVAILABLE = "Matplotlib не установлен. Невозможно сохранить график."
