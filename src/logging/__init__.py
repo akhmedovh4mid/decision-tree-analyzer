@@ -3,6 +3,7 @@ from .error_messages import (
     DatasetError,
     EncoderError,
     LoaderError,
+    ModelError,
     SaverError,
     ScalerError,
     SplitterError,
@@ -12,6 +13,7 @@ from .log_messages import (
     DatasetLog,
     EncoderLog,
     LoaderLog,
+    ModelLog,
     SaverLog,
     ScalerLog,
     SplitterLog,
@@ -34,4 +36,6 @@ __all__ = [
     "SaverLog",
     "DatasetError",
     "DatasetLog",
+    "ModelError",
+    "ModelLog",
 ]

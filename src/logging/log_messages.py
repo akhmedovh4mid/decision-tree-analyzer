@@ -95,3 +95,15 @@ class DatasetLog:
     TARGET_SET = "Установлена целевая колонка: %s"
     DATA_UPDATED = "Dataset обновлён. Новый размер: %s"
     DATASET_CLEARED = "Dataset очищен."
+
+
+class ModelLog:
+    INIT = "DecisionTreeModel инициализирован. Тип задачи: %s"
+    START_TRAIN = "Начато обучение дерева решений."
+    TRAIN_COMPLETE = "Обучение завершено."
+    START_PREDICT = "Выполняется предсказание."
+    PREDICT_COMPLETE = "Предсказание завершено."
+    START_EVALUATE = "Вычисление метрик модели."
+    EVALUATE_COMPLETE = "Метрики вычислены."
+    FEATURE_IMPORTANCE = "Вычислена важность признаков."
+    TREE_PLOTTED = "Граф дерева решений построен."

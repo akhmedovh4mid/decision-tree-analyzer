@@ -63,3 +63,14 @@ class DatasetError:
     DATASET_EMPTY = "Dataset пуст. Сначала загрузите данные."
     TARGET_NOT_SET = "Целевая колонка не установлена."
     COLUMN_NOT_FOUND = "Колонка '{col}' не найдена в DataFrame."
+
+
+class ModelError:
+    MODEL_NOT_FITTED = "Модель ещё не обучена. Сначала вызовите fit()."
+    INVALID_TASK = (
+        "Неверный тип задачи: {task}. Используйте 'classification' или 'regression'."
+    )
+    PREDICTION_FAILED = "Ошибка при предсказании."
+    TRAIN_FAILED = "Ошибка при обучении модели."
+    EVALUATION_FAILED = "Ошибка при вычислении метрик."
+    FEATURE_NAMES_REQUIRED = "Не указаны имена признаков."
