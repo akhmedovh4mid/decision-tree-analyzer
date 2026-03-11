@@ -8,6 +8,7 @@ from .error_messages import (
     SaverError,
     ScalerError,
     SplitterError,
+    VisualizationError,
 )
 from .log_messages import (
     DataCleanerLog,
@@ -19,6 +20,7 @@ from .log_messages import (
     SaverLog,
     ScalerLog,
     SplitterLog,
+    VisualizationLog,
 )
 from .logger import AppLogger
 
@@ -42,4 +44,6 @@ __all__ = [
     "ModelLog",
     "EvaluatorError",
     "EvaluatorLog",
+    "VisualizationError",
+    "VisualizationLog",
 ]

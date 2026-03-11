@@ -82,3 +82,9 @@ class EvaluatorError:
     )
     EVALUATION_FAILED = "Ошибка при вычислении метрик."
     PLOT_FAILED = "Ошибка при построении графика."
+
+
+class VisualizationError:
+    DATAFRAME_EMPTY = "DataFrame пуст. Невозможно построить график."
+    COLUMN_NOT_FOUND = "Колонка '{col}' не найдена в DataFrame."
+    PLOT_FAILED = "Ошибка при построении графика."

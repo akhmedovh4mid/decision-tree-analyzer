@@ -116,3 +116,12 @@ class EvaluatorLog:
     CONFUSION_MATRIX = "Матрица ошибок построена."
     CROSS_VALIDATION = "Выполнена перекрёстная проверка модели."
     PLOT_CREATED = "График оценки модели построен."
+
+
+class VisualizationLog:
+    HISTOGRAM = "Построена гистограмма для колонки: %s"
+    BOXPLOT = "Построен boxplot для колонки: %s"
+    CORRELATION = "Построена корреляционная матрица."
+    SCATTER = "Построен scatter plot: %s vs %s"
+    FEATURE_IMPORTANCE = "Построен график важности признаков."
+    CONFUSION_MATRIX = "Построена визуализация confusion matrix."
