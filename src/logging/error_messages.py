@@ -7,6 +7,7 @@ class DataCleanerError:
         "Для отсутствующих данных по обработке отсутствуют корректные столбцы."
     )
     NON_NUMERIC_COLUMN_ZSCORE_ERROR = "Для удаления выбросов из Z-критерия столбец '{col}' должен содержать числовые значения."
+    UNKNOWN_MISSING_VALUE = "Стратегия для неуказанных значений: {strategy}"
 
 
 class EncoderError:

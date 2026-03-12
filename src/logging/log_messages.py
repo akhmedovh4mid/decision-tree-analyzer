@@ -16,6 +16,7 @@ class DataCleanerLog:
     MISSING_AFTER = "Количество пропусков после обработки: %s"
     DEVISION_ZERO = "Некоторые колонки имеют нулевое стандартное отклонение. Они не будут влиять на удаление выбросов."
     EMPY_DATA = "Нет данных для удаления выбросов"
+    SUBSET_MISSING_WARNING = "Columns not found: %s"
 
 
 class EncoderLog:

@@ -170,6 +170,9 @@ class DataCleaner:
                 self.data_frame[cols] = self.data_frame[cols].bfill()
                 logger.info(DCL.APPLY_BFILL)
 
+            case _:
+                raise ValueError(DCE.UNKNOWN_MISSING_VALUE.format(strategy))
+
         remaining_cols = [c for c in cols if c in self.data_frame.columns]
 
         if remaining_cols:
@@ -205,6 +208,17 @@ class DataCleaner:
         Returns
             self
         """
+        if subset is not None:
+            missing = [c for c in subset if c not in self.data_frame.columns]
+
+            if missing:
+                logger.warning(DCL.SUBSET_MISSING_WARNING, missing)
+
+            subset = [c for c in subset if c in self.data_frame.columns]
+
+            if not subset:
+                return self
+
         self.data_frame = self.data_frame.drop_duplicates(subset=subset, keep=keep)
         return self
 
