@@ -57,7 +57,7 @@ class DataCleaner:
         return self.data_frame.head(n)
 
     def get_data(self) -> DataFrame:
-        return self.data_frame
+        return self.data_frame.copy()
 
     # --------------------------------------------------------
     # Missing values
@@ -69,6 +69,28 @@ class DataCleaner:
         fill_value: int | float | str | None = None,
         columns: Sequence[str] | None = None,
     ) -> DataCleaner:
+        """
+        Обрабатывает пропущенные значения в указанных колонках.
+
+        Parameters
+            strategy : Strategy
+                Стратегия обработки:
+                "drop_rows"      : удалить строки с пропусками
+                "drop_columns"   : удалить колонки, содержащие пропуски
+                "fill_constant"  : заполнить константой (требуется fill_value)
+                "fill_mean"      : заполнить средним (только для числовых колонок)
+                "fill_median"    : заполнить медианой (только для числовых)
+                "fill_mode"      : заполнить модой (работает для любых типов)
+                "fill_ffill"     : forward fill
+                "fill_bfill"     : backward fill
+            fill_value : int, float, str, optional
+                Значение для заполнения при strategy="fill_constant".
+            columns : list of str, optional
+                Список колонок для обработки. Если None, обрабатываются все колонки.
+
+        Returns
+            self
+        """
 
         if columns is None:
             cols = list(self.data_frame.columns)
@@ -101,7 +123,6 @@ class DataCleaner:
                     .columns[self.data_frame[cols].isna().any()]
                     .tolist()
                 )
-
                 self.data_frame = self.data_frame.drop(columns=cols_with_na)
                 logger.info(DCL.COLUMNS_DROPPED, cols_with_na)
 
@@ -149,7 +170,13 @@ class DataCleaner:
                 self.data_frame[cols] = self.data_frame[cols].bfill()
                 logger.info(DCL.APPLY_BFILL)
 
-        missing_after = self.data_frame[cols].isna().sum().sum()
+        remaining_cols = [c for c in cols if c in self.data_frame.columns]
+
+        if remaining_cols:
+            missing_after = self.data_frame[remaining_cols].isna().sum().sum()
+        else:
+            missing_after = 0
+
         logger.debug(DCL.MISSING_AFTER, missing_after)
 
         return self
@@ -163,7 +190,21 @@ class DataCleaner:
         subset: Sequence[str] | None = None,
         keep: DropKeep = "first",
     ) -> DataCleaner:
+        """
+        Удаляет дубликаты строк.
 
+        Parameters
+            subset : list of str, optional
+                Рассматривать только указанные колонки для определения дубликатов.
+                Если None, используются все колонки.
+            keep : 'first', 'last', False
+                first : оставить первое вхождение
+                last  : оставить последнее вхождение
+                False : удалить все дубликаты
+
+        Returns
+            self
+        """
         self.data_frame = self.data_frame.drop_duplicates(subset=subset, keep=keep)
         return self
 
@@ -176,7 +217,27 @@ class DataCleaner:
         columns: Sequence[str] | None = None,
         multiplier: float = 1.5,
     ) -> DataCleaner:
+        """
+        Удаляет выбросы на основе межквартильного размаха (IQR).
 
+        Для каждой указанной колонки вычисляются Q1, Q3, IQR.
+        Удаляются строки, в которых значение хотя бы в одной колонке
+        выходит за пределы [Q1 - multiplier*IQR, Q3 + multiplier*IQR].
+
+        Важно: строки, содержащие NaN в анализируемых колонках,
+        будут удалены, так как они не могут быть проверены на попадание в интервал.
+        Если требуется иная обработка пропусков, выполните её перед вызовом этого метода
+        с помощью `handle_missings`.
+
+        Parameters
+            columns : list of str, optional
+                Список числовых колонок для анализа. Если None, берутся все числовые.
+            multiplier : float, default=1.5
+                Множитель IQR для определения границ.
+
+        Returns
+            self
+        """
         if columns is None:
             columns = self.data_frame.select_dtypes(
                 include=[np.number]
@@ -186,18 +247,22 @@ class DataCleaner:
             if not is_numeric_dtype(self.data_frame[col]):
                 raise TypeError(DCE.NON_NUMERIC_COLUMN_IQR_ERROR.format(col=col))
 
-        df = self.data_frame[list(columns)]
+        df_subset = self.data_frame[list(columns)]
 
-        values = df.to_numpy()
+        if df_subset.empty:
+            logger.warning(DCL.EMPY_DATA)
+            return self
+
+        values = df_subset.to_numpy()
 
         q1 = np.nanpercentile(values, 25, axis=0)
         q3 = np.nanpercentile(values, 75, axis=0)
-
         iqr = q3 - q1
-
         lower = q1 - multiplier * iqr
         upper = q3 + multiplier * iqr
 
+        # Маска: True для строк, которые НЕ являются выбросами
+        # Строки с NaN дадут False в сравнении, поэтому будут удалены
         mask = np.all((values >= lower) & (values <= upper), axis=1)
 
         self.data_frame = self.data_frame.loc[mask].reset_index(drop=True)
@@ -213,7 +278,26 @@ class DataCleaner:
         columns: Sequence[str] | None = None,
         threshold: float = 3.0,
     ) -> DataCleaner:
+        """
+        Удаляет выбросы на основе Z-оценки (стандартизации).
 
+        Для каждой указанной колонки вычисляются среднее и стандартное отклонение.
+        Удаляются строки, где |Z| > threshold хотя бы в одной колонке.
+
+        Важно: строки, содержащие NaN в анализируемых колонках,
+        будут удалены, так как Z-оценка для них не определена.
+        Если требуется иная обработка пропусков, выполните её перед вызовом этого метода
+        с помощью `handle_missings`.
+
+        Parameters
+            columns : list of str, optional
+                Список числовых колонок для анализа. Если None, берутся все числовые.
+            threshold : float, default=3.0
+                Пороговое значение Z-оценки.
+
+        Returns
+            self
+        """
         if columns is None:
             columns = self.data_frame.select_dtypes(
                 include=[np.number]
@@ -223,10 +307,25 @@ class DataCleaner:
             if not is_numeric_dtype(self.data_frame[col]):
                 raise TypeError(DCE.NON_NUMERIC_COLUMN_ZSCORE_ERROR.format(col=col))
 
-        df = self.data_frame[list(columns)]
+        df_subset = self.data_frame[list(columns)]
 
-        z_scores = (df - df.mean()) / df.std()
+        if df_subset.empty:
+            logger.warning(DCL.EMPY_DATA)
+            return self
 
+        # Вычисляем Z-оценки (среднее и std по каждой колонке, игнорируя NaN)
+        means = df_subset.mean()
+        stds = df_subset.std()
+
+        # Избегаем деления на ноль
+        if (stds == 0).any():  # pyright: ignore[reportAttributeAccessIssue]
+            logger.warning(DCL.DEVISION_ZERO)
+            stds = stds.replace(0, np.inf)  # pyright: ignore[reportAttributeAccessIssue]
+
+        z_scores = (df_subset - means) / stds
+
+        # Маска: True для строк, которые НЕ являются выбросами
+        # Строки с NaN дадут False в сравнении, поэтому будут удалены
         mask = (z_scores.abs() <= threshold).all(axis=1)
 
         self.data_frame = self.data_frame.loc[mask].reset_index(drop=True)
@@ -238,5 +337,6 @@ class DataCleaner:
     # --------------------------------------------------------
 
     def reset_index(self, drop: bool = True) -> DataCleaner:
+        """Сбрасывает индекс DataFrame."""
         self.data_frame = self.data_frame.reset_index(drop=drop)
         return self

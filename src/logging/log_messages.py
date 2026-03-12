@@ -14,6 +14,8 @@ class DataCleanerLog:
     APPLY_FFILL = "Применён forward fill"
     APPLY_BFILL = "Применён backward fill"
     MISSING_AFTER = "Количество пропусков после обработки: %s"
+    DEVISION_ZERO = "Некоторые колонки имеют нулевое стандартное отклонение. Они не будут влиять на удаление выбросов."
+    EMPY_DATA = "Нет данных для удаления выбросов"
 
 
 class EncoderLog:
